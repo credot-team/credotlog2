@@ -62,6 +62,7 @@ export const log = async (
 
 type colors = 'black' | 'info' | 'success' | 'warning' | 'error' | 'debug';
 /**
+ * 指定輸出顏色
  * @param {string} color 顏色 'black' | 'info' | 'success' | 'warning' | 'error' | 'debug'
  * @param {string} message
  */
@@ -88,6 +89,7 @@ export const colorlog = (message: string, color: colors = 'black') => {
 };
 
 /**
+ * 指定log等級
  * @param {number} level 等級 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7
  * @param {string} message
  */
