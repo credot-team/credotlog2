@@ -4,33 +4,36 @@ import chalk from 'chalk';
 let graylogURL = '';
 let host = '';
 
-export const init = (protocol: string, urlHost: string, serviceName: string) => {
+/**
+ * @param {string} protocol http/https
+ * @param {string} urlHost 網址
+ * @param {string} serviceName graylog的source
+ */
+export const init = (protocol: 'http' | 'https', urlHost: string, serviceName: string) => {
   const url = new URL('http://w');
   url.protocol = protocol;
   url.host = urlHost;
   url.pathname = 'gelf';
   graylogURL = url.toString();
   host = serviceName;
-  colorlog(`graylog init: ${JSON.stringify({ graylogURL, host })}`, 'info');
+  colorlog(`graylog init: ${JSON.stringify({ graylogURL, source: host })}`, 'info');
 };
 
 // https://en.wikipedia.org/wiki/Syslog#cite_note-opengroupSyslog-8
 const levelMap = new Map();
-levelMap.set('Emerg', 0);
-levelMap.set('Alert', 1);
-levelMap.set('Crit', 2);
+levelMap.set('Emerg', 0); // A panic condition.
+levelMap.set('Alert', 1); // A condition that should be corrected immediately, such as a corrupted system database.
+levelMap.set('Crit', 2); // Hard device errors.
 levelMap.set('Err', 3);
 levelMap.set('Warning', 4);
-levelMap.set('Notice', 5);
+levelMap.set('Notice', 5); // Conditions that are not error conditions, but that may require special handling.
 levelMap.set('Info', 6);
-levelMap.set('Debug', 7);
+levelMap.set('Debug', 7); // only when debugging a program.
 
 /**
- * sfslfms;dfmskdfm;sdmf
- * @param {string} level hshdhdoshdlodklds
- * @param {string} message fdsfldsl
- * @param {object} others
- * @param {property} others.host
+ * @param {string} level 等級
+ * @param {string} message
+ * @param {object} others 其他設定
  * @returns {Promise<void>}
  */
 export const log = async (
@@ -58,7 +61,10 @@ export const log = async (
 };
 
 type colors = 'black' | 'info' | 'success' | 'warning' | 'error' | 'debug';
-
+/**
+ * @param {string} color 顏色 'black' | 'info' | 'success' | 'warning' | 'error' | 'debug'
+ * @param {string} message
+ */
 export const colorlog = (message: string, color: colors = 'black') => {
   switch (color) {
     case 'success':
@@ -81,6 +87,10 @@ export const colorlog = (message: string, color: colors = 'black') => {
   }
 };
 
+/**
+ * @param {number} level 等級 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7
+ * @param {string} message
+ */
 export const levellog = (message: string, level: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7) => {
   switch (level) {
     case 7:
