@@ -40,7 +40,7 @@ const logger = credotlog.create({
   //
   // 當 uncaughtException 發生時，以 'crit' 等級做 log
   //
-  exceptionLevel: 'debug',
+  exceptionLevel: 'crit',
 });
 
 //
@@ -68,6 +68,8 @@ logger.err('database update error', {
 ## Logging levels
 
 預設的 logging levels 為 [RFC5424] 定義的 `syslog` 等級
+
+數字越小，級別越高，在此例中 `emerg` 為最高級別的訊息
 
 ```js
 const levels = {
@@ -98,7 +100,6 @@ const levels = {
 | maxSize            | string | 否   | 單一檔案大小限制，格式為 '\[數量\]\[單位\]'，不指定表示不限制。ex. 100k (100KB), 10m (10MB), 1g (1GB) |
 | maxDay             | number | 否   | 限制 log 檔最大天數，當 log 檔案超過此限制時會由最舊的檔案開始刪除。不指定表示不限制。                |
 | graylog            | object | 否   | 設定 Graylog 環境，不指定表示不輸出至 Graylog。                                                       |
-| filenameDateFormat | string | 否   | 指定檔名中的日期格式。(預設: 'MMDD')                                                                  |
 | exceptionLevel     | string | 否   | 指定發生未捕捉例外時，要以何種 level 來記錄錯誤。不指定表示不監聽未捕捉例外。                         |
 | levelMapping       | object | 否   | 指定 level 對應表。當自定義的 logging levels 中不存在與 syslog 對應的 level 時，此項為必填            |
 
@@ -174,6 +175,8 @@ logger.info('write into file');
 ## Express middleware
 
 適用於 [express] 的 middleware，用於紀錄 HTTP 請求與回應
+
+**_不建議與 [morgan] 一同使用_**
 
 ### Usage
 
@@ -282,3 +285,4 @@ app.use(
 [credot]: https://github.com/credot-team
 [rfc5424]: https://tools.ietf.org/html/rfc5424
 [express]: https://www.npmjs.com/package/express
+[morgan]: https://www.npmjs.com/package/morgan
