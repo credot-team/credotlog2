@@ -1,7 +1,6 @@
-import credotlog from './index';
+import credotlog from '../';
 import express from 'express';
 import * as http from 'http';
-import path from 'path';
 
 const logger = credotlog.create({
   consoleLogLevel: 'info',
@@ -18,9 +17,6 @@ const logger = credotlog.create({
 const app = express();
 
 app.use(credotlog.express.logging({ logger: logger }));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(express.static(path.join(__dirname, 'public')));
 
 app.all('/test', (req, res) => {
   res.json({ errorCode: 0, errorMessage: 'success' });

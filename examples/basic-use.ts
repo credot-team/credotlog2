@@ -1,13 +1,16 @@
-import credotlog from './index';
+import credotlog from '../';
 
 const logger = credotlog.create({
   consoleLogLevel: 'info',
+  maxSize: '100m',
+  maxDay: 14,
   graylog: {
     level: 'err',
     server: { host: 'https://graylog.credot.ml/', port: 1234 },
     hostname: 'credotlog-test',
   },
   exceptionLevel: 'debug',
+  filenameDateFormat: 'YYYYMMDDHH'
 });
 
 credotlog.addLevelFontStyles({
