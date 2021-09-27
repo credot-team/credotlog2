@@ -1,14 +1,14 @@
 import { LevelDefinition } from './index';
 
 const levels = {
-  notice: 5,
   emerg: 0,
   alert: 1,
-  warning: 4,
-  err: 3,
-  debug: 7,
   crit: 2,
+  err: 3,
+  warning: 4,
+  notice: 5,
   info: 6,
+  debug: 7,
 };
 
 const colors = {

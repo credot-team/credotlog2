@@ -26,7 +26,7 @@ export const DefaultLevelMapping: { [p in RequiredLevels]: StringKeys<DefaultLog
 
 interface FixedLogOptions<Levels extends LogLevels> {
   /**
-   * 指定 level <= 何種層級的訊息該被輸出到 console，不指定表示不輸出。 (default: 'info')
+   * 指定 level <= 何種層級的訊息該被輸出到 console，不指定表示不輸出。
    */
   consoleLogLevel?: StringKeys<Levels>;
 
@@ -53,10 +53,10 @@ interface FixedLogOptions<Levels extends LogLevels> {
   filenameDateFormat?: string;
 
   /**
-   * 單一檔案大小限制，格式為[數像][單位]，不指定表示不限制。
+   * 單一檔案大小限制，格式為[數量][單位]，不指定表示不限制。
    * 例: 100k (100KB), 10m (10MB), 1g (1GB)
    */
-  maxSize?: string;
+  maxSize?: `${number}${'k'|'m'|'g'}`;
 
   /**
    * 限制 log 檔最大天數，當 log 檔案超過此限制時會由最舊的檔案開始刪除。不指定表示不限制。
@@ -64,7 +64,7 @@ interface FixedLogOptions<Levels extends LogLevels> {
   maxDay?: number;
 
   /**
-   * 設定 Graylog 環境，不指定表示不使用 Graylog
+   * 設定 Graylog 環境，不指定表示不使用 Graylog。
    */
   graylog?: graylogOptions<Levels>;
 
@@ -95,6 +95,13 @@ interface graylogOptions<Levels> {
 }
 
 type LevelMapping<Levels> = {
+  /**
+   * 指定 level 對應表。
+   *
+   * ex. { warning: 'err' } 將 warning 等級視為 err (errOut 將接受 warning 訊息)
+   *
+   * 當自訂義的 logging levels 中不存在與 syslog 對應的 level 時，此項為必填
+   */
   levelMapping?: {
     [p in Exclude<RequiredLevels, keyof Levels>]: StringKeys<Levels>;
   } &
