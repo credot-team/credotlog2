@@ -157,7 +157,7 @@ export function create<T extends LogLevels>(options: LogOptions<T>, levels?: T) 
     transports: generateTransports(
       {
         consoleLogLevel: lowestLevel,
-        errorOut: _options.errorOut,
+        errorOut: _options.errorOut, // TODO 是否該可自定義?
         levelMapping: {
           debug: lowestLevel,
           info: lowestLevel,
