@@ -73,7 +73,7 @@ function logRequest(err, res, opts) {
     // get content-length
     const contentLength = res.getHeader('content-length') || UNDEFINED_CHAR;
     // get request url path
-    const path = (_b = (_a = (0, parseurl_1.default)(req)) === null || _a === void 0 ? void 0 : _a.pathname) !== null && _b !== void 0 ? _b : UNDEFINED_CHAR;
+    const path = (_b = (_a = parseurl_1.default.original(req)) === null || _a === void 0 ? void 0 : _a.path) !== null && _b !== void 0 ? _b : UNDEFINED_CHAR;
     // generate message string
     const message = `HTTP ${req.method} ${path} ${status} ${costTime} ${contentLength}`;
     // choose level by status

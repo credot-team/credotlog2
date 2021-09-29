@@ -1,11 +1,11 @@
 {
   "name": "credotlog",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "license": "MIT",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc --build --clean && tsc",
     "example-basic": "ts-node examples/basic-use.ts",
     "example-express-middleware": "ts-node examples/express-middleware.ts"
   },

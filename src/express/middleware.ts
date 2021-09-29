@@ -127,7 +127,7 @@ function logRequest(
   // get content-length
   const contentLength = res.getHeader('content-length') || UNDEFINED_CHAR;
   // get request url path
-  const path = parseurl(req)?.pathname ?? UNDEFINED_CHAR;
+  const path = parseurl.original(req)?.path ?? UNDEFINED_CHAR;
   // generate message string
   const message = `HTTP ${req.method} ${path} ${status} ${costTime} ${contentLength}`;
 
