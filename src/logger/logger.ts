@@ -5,22 +5,29 @@ import EventEmitter from 'events';
 
 type LeveledLogMethod = (message: string, others?: object) => void;
 
-export type Logger<Levels extends LogLevels> = DivideLogger<Levels> &
-  {
-    [P in keyof Levels]: LeveledLogMethod;
-  };
+export type Logger<Levels extends LogLevels> = DivideLogger<Levels> & {
+  [P in keyof Levels]: LeveledLogMethod;
+};
 
 export class DivideLogger<Levels extends LogLevels> {
+  private readonly prefix: string;
+  private readonly realPrefix: string;
   private readonly baseLogger: winston.Logger;
   private readonly subLogger: winston.Logger;
   private readonly emitter = new EventEmitter();
+  private readonly create: (prefix?: string) => DivideLogger<Levels>;
 
   constructor(
+    prefix: string,
     logger: winston.Logger,
     subLogger: winston.Logger,
     levelMapping: Record<RequiredLevels, string>,
+    create: (prefix?: string) => DivideLogger<Levels>,
   ) {
     const self: any = this;
+    this.create = create;
+    this.prefix = prefix;
+    this.realPrefix = prefix ? prefix + ': ' : '';
 
     // 產生與各 level 對應的快捷 method ( ex. this.err(), this.info() )
     Object.keys(logger.levels).forEach((k) => {
@@ -82,10 +89,22 @@ export class DivideLogger<Levels extends LogLevels> {
   }
 
   log(level: keyof Levels, message: string, others?: object) {
-    this.baseLogger.log(level as string, message, others);
+    this.baseLogger.log(level as string, this.realPrefix + message, others);
   }
 
   levels() {
     return this.baseLogger.levels as Levels;
+  }
+
+  childLogger(prefix?: string): Logger<Levels> {
+    const newPrefix = prefix || '';
+    const newLogger = this.create(this.prefix + newPrefix);
+
+    this.emitter.eventNames().forEach((event) => {
+      this.emitter.listeners(event).forEach((listener) => {
+        newLogger.on(event, listener as () => void);
+      });
+    });
+    return newLogger as any;
   }
 }

@@ -117,13 +117,22 @@ function generateTransports<T extends LogLevels>(options: LogOptions<T>, levels:
 }
 
 export function create(options: LogOptions<DefaultLogLevels>): Logger<DefaultLogLevels>;
-export function create<T extends LogLevels>(options: LogOptions<T>, levels: T): Logger<T>;
+export function create(
+  options: LogOptions<DefaultLogLevels>,
+  prefix: string,
+): Logger<DefaultLogLevels>;
+export function create<T extends LogLevels>(
+  options: LogOptions<T>,
+  prefix: string,
+  levels: T,
+): Logger<T>;
 /**
  * 建立新 logger
  * @param options 設定
+ * @param prefix
  * @param levels 設定 logger 使用的訊息等級 (預設為 syslog (RFC5424) )
  */
-export function create<T extends LogLevels>(options: LogOptions<T>, levels?: T) {
+export function create<T extends LogLevels>(options: LogOptions<T>, prefix?: string, levels?: T) {
   const exceptionLevel = options.exceptionLevel;
   const handleExceptions = !!exceptionLevel;
   const _levels: any = { ...(levels ?? defaultLogLevels) };
@@ -177,5 +186,16 @@ export function create<T extends LogLevels>(options: LogOptions<T>, levels?: T) 
     baseLogger.exceptions.handle(new ConsoleErrorTransport({ errorLevel: exceptionLevel }));
   }
 
-  return new DivideLogger(baseLogger, subLogger, _options.levelMapping) as any;
+  const createFunc = (pf?: string) => {
+    // @ts-ignore
+    return create(options, pf || '', levels);
+  };
+
+  return new DivideLogger(
+    prefix || '',
+    baseLogger,
+    subLogger,
+    _options.levelMapping,
+    createFunc,
+  ) as any;
 }
