@@ -32,7 +32,11 @@ function generateTransports(options, levels) {
             winston_1.default.format.simple()),
         }));
     }
-    if (!(options.debugOut || options.infoOut || options.errorOut || options.graylog))
+    if (!(options.debugOut ||
+        options.infoOut ||
+        options.errorOut ||
+        options.graylog ||
+        options.axiomlog))
         return transports;
     const dateFormat = options.filenameDateFormat || 'MMDD';
     const maxDay = options.maxDay ? `${options.maxDay}d` : undefined;
@@ -90,6 +94,20 @@ function generateTransports(options, levels) {
                 },
                 hostname: options.graylog.hostname,
             },
+        }));
+    }
+    if (options.axiomlog) {
+        transports.push(new transports_1.AxiomTransport({
+            level: options.axiomlog.level,
+            axiom: {
+                env: options.axiomlog.env,
+                apiToken: options.axiomlog.apiToken,
+                service: options.axiomlog.service,
+            },
+            handleExceptions: handleExceptions,
+            format: winston_1.default.format.combine(format_1.format.errors(), winston_1.default.format.simple()),
+            levels: levels,
+            levelMap: levelMapping,
         }));
     }
     return transports;

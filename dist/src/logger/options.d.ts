@@ -42,9 +42,22 @@ interface FixedLogOptions<Levels extends LogLevels> {
      */
     graylog?: graylogOptions<Levels>;
     /**
+     * 設定 Axiom 環境
+     */
+    axiomlog?: axiomOptions<Levels>;
+    /**
      * 指定發生未捕捉例外時，要以何種 level 來記錄錯誤。不指定表示不監聽未捕捉例外。
      */
     exceptionLevel?: StringKeys<Levels>;
+}
+interface axiomOptions<Levels> {
+    env: string;
+    apiToken: string;
+    service: string;
+    /**
+     * 指定 level <= 何種層級的訊息該被輸出到 console Graylog
+     */
+    level: StringKeys<Levels>;
 }
 interface graylogOptions<Levels> {
     /**
