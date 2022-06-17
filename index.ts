@@ -1,3 +1,5 @@
 import * as credotlog from './src/credotlog';
 
-export default credotlog;
+// @ts-ignore
+credotlog.default = credotlog;
+export = credotlog;
