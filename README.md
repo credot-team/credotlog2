@@ -37,6 +37,18 @@ const logger = credotlog.create({
     server: { host: 'https://graylog.credot.ml/' },
     hostname: 'my-awesome-app',
   },
+
+  //
+  // axiom範例寫法
+  // 注意axiom只會標記level為warning及error的紀錄
+  //
+  axiomlog: {
+    level: 'info',
+    env: process.env.NODE_ENV, // 服務環境: development || beta || production
+    apiToken: process.env.DEV_TOKEN, // 環境的apiToken
+    service: 'test_service', // 服務名稱
+  },
+
   //
   // 當 uncaughtException 發生時，以 'crit' 等級做 log
   //

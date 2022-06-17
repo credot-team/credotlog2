@@ -2,7 +2,7 @@ import winston from 'winston';
 import 'winston-daily-rotate-file';
 import { DefaultLevelMapping, LogOptions } from './options';
 import { Default as DefaultLevel, DefaultLogLevels, LogLevels } from '../logLevels';
-import { ConsoleErrorTransport, GraylogTransport } from '../transports';
+import { ConsoleErrorTransport, GraylogTransport, AxiomTransport } from '../transports';
 import { DivideLogger, Logger } from './logger';
 import { format } from '../format';
 
@@ -36,7 +36,15 @@ function generateTransports<T extends LogLevels>(options: LogOptions<T>, levels:
     );
   }
 
-  if (!(options.debugOut || options.infoOut || options.errorOut || options.graylog))
+  if (
+    !(
+      options.debugOut ||
+      options.infoOut ||
+      options.errorOut ||
+      options.graylog ||
+      options.axiomlog
+    )
+  )
     return transports;
 
   const dateFormat = options.filenameDateFormat || 'MMDD';
@@ -109,6 +117,24 @@ function generateTransports<T extends LogLevels>(options: LogOptions<T>, levels:
           },
           hostname: options.graylog.hostname,
         },
+      }),
+    );
+  }
+
+  if (options.axiomlog) {
+    transports.push(
+      new AxiomTransport({
+        level: options.axiomlog.level,
+        axiom: {
+          env: options.axiomlog.env,
+          apiToken: options.axiomlog.apiToken,
+          service: options.axiomlog.service,
+        },
+
+        handleExceptions: handleExceptions,
+        format: winston.format.combine(format.errors(), winston.format.simple()),
+        levels: levels,
+        levelMap: levelMapping,
       }),
     );
   }
