@@ -62,7 +62,7 @@ export class AxiomTransport extends Transport {
       service: this.service,
       level: level === 'err' ? 'error' : level,
       message,
-      data: { ...additionFields },
+      ...additionFields,
     };
 
     this.instance
