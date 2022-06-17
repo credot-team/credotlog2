@@ -41,6 +41,7 @@ function generateTransports(options, levels) {
     winston_1.default.format.simple());
     if (options.debugOut) {
         transports.push(new winston_1.default.transports.DailyRotateFile({
+            auditFile: undefined,
             level: levelMapping.debug,
             format: formatter,
             filename: insertFilenameDate(options.debugOut),
@@ -52,6 +53,7 @@ function generateTransports(options, levels) {
     }
     if (options.infoOut) {
         transports.push(new winston_1.default.transports.DailyRotateFile({
+            auditFile: undefined,
             level: levelMapping.info,
             format: formatter,
             filename: insertFilenameDate(options.infoOut),
@@ -63,6 +65,7 @@ function generateTransports(options, levels) {
     }
     if (options.errorOut) {
         transports.push(new winston_1.default.transports.DailyRotateFile({
+            auditFile: undefined,
             handleExceptions: handleExceptions,
             level: levelMapping.err,
             format: formatter,

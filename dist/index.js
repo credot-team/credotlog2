@@ -18,6 +18,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-Object.defineProperty(exports, "__esModule", { value: true });
 const credotlog = __importStar(require("./src/credotlog"));
-exports.default = credotlog;
+// @ts-ignore
+credotlog.default = credotlog;
+module.exports = credotlog;
