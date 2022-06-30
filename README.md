@@ -105,9 +105,11 @@ const levels = {
 | 名稱               | 型別   | 必填 | 描述                                                                                                  |
 | ------------------ | ------ | ---- | ----------------------------------------------------------------------------------------------------- |
 | consoleLogLevel    | string | 否   | 將等級等於或高於此值的訊息輸出至 console 。不指定表示不輸出至 console。                               |
+| consoleLogFormat   | string | 否   | 指定輸出至 console 的文字格式 ('plainText' &vert; 'json')。預設為 'plainText'                         |
 | infoOut            | string | 否   | 將對應等級等於或高於 'info' 的訊息輸出至此路徑的檔案。不指定表示不輸出。                              |
 | errorOut           | string | 否   | 將對應等級等於或高於 'err' 的訊息輸出至此路徑的檔案。不指定表示不輸出。                               |
 | debugOut           | string | 否   | 將對應等級等於或高於 'debug' 的訊息輸出至此路徑的檔案。不指定表示不輸出。                             |
+| fileLogFormat      | string | 否   | 指定輸出至檔案的文字格式 ('plainText' &vert; 'json')。預設為 'plainText'                              |
 | filenameDateFormat | string | 否   | 指定檔名中的日期格式。(預設: 'MMDD')                                                                  |
 | maxSize            | string | 否   | 單一檔案大小限制，格式為 '\[數量\]\[單位\]'，不指定表示不限制。ex. 100k (100KB), 10m (10MB), 1g (1GB) |
 | maxDay             | number | 否   | 限制 log 檔最大天數，當 log 檔案超過此限制時會由最舊的檔案開始刪除。不指定表示不限制。                |
