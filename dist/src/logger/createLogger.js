@@ -12,6 +12,10 @@ const transports_1 = require("../transports");
 const logger_1 = require("./logger");
 const format_1 = require("../format");
 const defaultLogLevels = logLevels_1.Default.levels;
+const defaultOptions = {
+    consoleLogFormat: 'plainText',
+    fileLogFormat: 'plainText',
+};
 /**
  * 在檔名與附檔名之間插入時間信息
  * @param filePath 檔案路徑
@@ -20,6 +24,16 @@ function insertFilenameDate(filePath) {
     const parts = filePath.split('.');
     return [...parts.slice(0, -1), '%DATE%', parts.slice(-1)].join('.');
 }
+function getConsoleLogFormatter(logFormat) {
+    return winston_1.default.format.combine(...(logFormat === 'json'
+        ? [winston_1.default.format.timestamp(), winston_1.default.format.json()]
+        : [winston_1.default.format.colorize(), format_1.format.timestamp(), winston_1.default.format.simple()]));
+}
+function getFileLogFormatter(logFormat) {
+    return winston_1.default.format.combine(...(logFormat === 'json'
+        ? [winston_1.default.format.timestamp(), winston_1.default.format.json()]
+        : [format_1.format.errors(), format_1.format.timestamp(), winston_1.default.format.simple()]));
+}
 function generateTransports(options, levels) {
     const transports = [];
     const handleExceptions = !!options.exceptionLevel;
@@ -27,9 +41,7 @@ function generateTransports(options, levels) {
     if (options.consoleLogLevel) {
         transports.push(new winston_1.default.transports.Console({
             level: options.consoleLogLevel,
-            format: winston_1.default.format.combine(winston_1.default.format.colorize({}), format_1.format.timestamp(), 
-            // winston.format.align(),
-            winston_1.default.format.simple()),
+            format: getConsoleLogFormatter(options.consoleLogFormat),
         }));
     }
     if (!(options.debugOut ||
@@ -40,9 +52,7 @@ function generateTransports(options, levels) {
         return transports;
     const dateFormat = options.filenameDateFormat || 'MMDD';
     const maxDay = options.maxDay ? `${options.maxDay}d` : undefined;
-    const formatter = winston_1.default.format.combine(format_1.format.errors(), format_1.format.timestamp(), 
-    // winston.format.align(),
-    winston_1.default.format.simple());
+    const formatter = getFileLogFormatter(options.fileLogFormat);
     if (options.debugOut) {
         transports.push(new winston_1.default.transports.DailyRotateFile({
             auditFile: undefined,
@@ -125,7 +135,7 @@ function create(options, levels) {
     if (handleExceptions && !('error' in _levels) && exceptionLevel !== 'error') {
         _levels['error'] = _levels[exceptionLevel];
     }
-    const _options = Object.assign(Object.assign({}, options), { levelMapping: Object.assign(Object.assign({}, options_1.DefaultLevelMapping), options.levelMapping) });
+    const _options = Object.assign(Object.assign(Object.assign({}, defaultOptions), options), { levelMapping: Object.assign(Object.assign({}, options_1.DefaultLevelMapping), options.levelMapping) });
     const baseLogger = winston_1.default.createLogger({
         silent: false,
         levels: _levels,

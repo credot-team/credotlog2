@@ -58,7 +58,7 @@ class AxiomTransport extends winston_transport_1.default {
             callback === null || callback === void 0 ? void 0 : callback(undefined);
         })
             .catch((e) => {
-            const error = new Error(`send graylog failed: ${e.message}; payload: ${(0, safe_stable_stringify_1.default)(payload)};`);
+            const error = new Error(`send axiom failed: ${e.message}; payload: ${(0, safe_stable_stringify_1.default)(payload)};`);
             this.emit('warn', error);
             callback === null || callback === void 0 ? void 0 : callback(undefined);
         });
