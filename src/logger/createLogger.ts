@@ -1,12 +1,17 @@
 import winston from 'winston';
 import 'winston-daily-rotate-file';
-import { DefaultLevelMapping, LogOptions } from './options';
+import { DefaultLevelMapping, LogFormats, LogOptions } from './options';
 import { Default as DefaultLevel, DefaultLogLevels, LogLevels } from '../logLevels';
 import { ConsoleErrorTransport, GraylogTransport, AxiomTransport } from '../transports';
 import { DivideLogger, Logger } from './logger';
 import { format } from '../format';
 
 const defaultLogLevels = DefaultLevel.levels;
+
+const defaultOptions: LogOptions<any> = {
+  consoleLogFormat: 'plainText',
+  fileLogFormat: 'plainText',
+};
 
 /**
  * 在檔名與附檔名之間插入時間信息
@@ -15,6 +20,22 @@ const defaultLogLevels = DefaultLevel.levels;
 function insertFilenameDate(filePath: string): string {
   const parts = filePath.split('.');
   return [...parts.slice(0, -1), '%DATE%', parts.slice(-1)].join('.');
+}
+
+function getConsoleLogFormatter(logFormat: LogFormats) {
+  return winston.format.combine(
+    ...(logFormat === 'json'
+      ? [winston.format.timestamp(), winston.format.json()]
+      : [winston.format.colorize(), format.timestamp(), winston.format.simple()]),
+  );
+}
+
+function getFileLogFormatter(logFormat: LogFormats) {
+  return winston.format.combine(
+    ...(logFormat === 'json'
+      ? [winston.format.timestamp(), winston.format.json()]
+      : [format.errors(), format.timestamp(), winston.format.simple()]),
+  );
 }
 
 function generateTransports<T extends LogLevels>(options: LogOptions<T>, levels: LogLevels) {
@@ -26,12 +47,7 @@ function generateTransports<T extends LogLevels>(options: LogOptions<T>, levels:
     transports.push(
       new winston.transports.Console({
         level: options.consoleLogLevel,
-        format: winston.format.combine(
-          winston.format.colorize({}),
-          format.timestamp(),
-          // winston.format.align(),
-          winston.format.simple(),
-        ),
+        format: getConsoleLogFormatter(options.consoleLogFormat!),
       }),
     );
   }
@@ -49,12 +65,7 @@ function generateTransports<T extends LogLevels>(options: LogOptions<T>, levels:
 
   const dateFormat = options.filenameDateFormat || 'MMDD';
   const maxDay = options.maxDay ? `${options.maxDay}d` : undefined;
-  const formatter = winston.format.combine(
-    format.errors(),
-    format.timestamp(),
-    // winston.format.align(),
-    winston.format.simple(),
-  );
+  const formatter = getFileLogFormatter(options.fileLogFormat!);
 
   if (options.debugOut) {
     transports.push(
@@ -160,6 +171,7 @@ export function create<T extends LogLevels>(options: LogOptions<T>, levels?: T) 
   }
 
   const _options = {
+    ...defaultOptions,
     ...options,
     levelMapping: { ...DefaultLevelMapping, ...options.levelMapping },
   };

@@ -2,6 +2,8 @@ import { DefaultLogLevels, LogLevels, syslog } from '../logLevels';
 
 type StringKeys<T> = Extract<keyof T, string>;
 
+export type LogFormats = 'plainText' | 'json';
+
 export type RequiredLevels = keyof typeof syslog.levels;
 
 export type LogOptions<Levels extends LogLevels> = FixedLogOptions<Levels> &
@@ -29,6 +31,20 @@ interface FixedLogOptions<Levels extends LogLevels> {
    * 指定 level <= 何種層級的訊息該被輸出到 console，不指定表示不輸出。
    */
   consoleLogLevel?: StringKeys<Levels>;
+
+  /**
+   * 指定輸出至 console 的文字格式 ('plainText' | 'json')
+   *
+   * 預設: 'plainText'
+   */
+  consoleLogFormat?: LogFormats;
+
+  /**
+   * 指定輸出至檔案的文字格式 ('plainText' | 'json')
+   *
+   * 預設: 'plainText'
+   */
+  fileLogFormat?: LogFormats;
 
   /**
    * 指定 level <= debug 的訊息輸出路徑，不指定表示不輸出。
