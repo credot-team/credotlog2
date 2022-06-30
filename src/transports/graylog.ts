@@ -84,7 +84,7 @@ export class GraylogTransport extends Transport {
       })
       .catch((e: Error) => {
         const error = new Error(
-          `send axiom failed: ${e.message}; payload: ${jsonStringify(payload)};`,
+          `send graylog failed: ${e.message}; payload: ${jsonStringify(payload)};`,
         );
         this.emit('warn', error);
         callback?.(undefined);

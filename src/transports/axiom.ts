@@ -1,7 +1,6 @@
 import Transport from 'winston-transport';
 import jsonStringify from 'safe-stable-stringify';
 import { LogLevels, syslog } from '../logLevels';
-import { URL } from 'url';
 import axios, { AxiosInstance } from 'axios';
 
 interface AxiomTransportOptions extends Transport.TransportStreamOptions {
@@ -75,7 +74,7 @@ export class AxiomTransport extends Transport {
       })
       .catch((e: Error) => {
         const error = new Error(
-          `send graylog failed: ${e.message}; payload: ${jsonStringify(payload)};`,
+          `send axiom failed: ${e.message}; payload: ${jsonStringify(payload)};`,
         );
         this.emit('warn', error);
         callback?.(undefined);
