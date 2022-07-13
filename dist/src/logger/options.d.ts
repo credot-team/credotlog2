@@ -2,7 +2,7 @@ import { DefaultLogLevels, LogLevels, syslog } from '../logLevels';
 declare type StringKeys<T> = Extract<keyof T, string>;
 export declare type LogFormats = 'plainText' | 'json';
 export declare type RequiredLevels = keyof typeof syslog.levels;
-export declare type LogOptions<Levels extends LogLevels> = FixedLogOptions<Levels> & (Exclude<RequiredLevels, keyof Levels> extends never ? LevelMapping<Levels> : Required<LevelMapping<Levels>>);
+export declare type LogOptions<Levels extends LogLevels = DefaultLogLevels> = FixedLogOptions<Levels> & (Exclude<RequiredLevels, keyof Levels> extends never ? LevelMapping<Levels> : Required<LevelMapping<Levels>>);
 export declare const DefaultLevelMapping: {
     [p in RequiredLevels]: StringKeys<DefaultLogLevels>;
 };
