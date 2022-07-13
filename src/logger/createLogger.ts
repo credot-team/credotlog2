@@ -1,8 +1,8 @@
 import winston from 'winston';
 import 'winston-daily-rotate-file';
 import { DefaultLevelMapping, LogFormats, LogOptions } from './options';
-import { Default as DefaultLevel, DefaultLogLevels, LogLevels } from '../logLevels';
-import { ConsoleErrorTransport, GraylogTransport, AxiomTransport } from '../transports';
+import { Default as DefaultLevel, LogLevels } from '../logLevels';
+import { AxiomTransport, ConsoleErrorTransport, GraylogTransport } from '../transports';
 import { DivideLogger, Logger } from './logger';
 import { format } from '../format';
 
@@ -153,7 +153,7 @@ function generateTransports<T extends LogLevels>(options: LogOptions<T>, levels:
   return transports;
 }
 
-export function create(options: LogOptions<DefaultLogLevels>): Logger<DefaultLogLevels>;
+export function create(options: LogOptions): Logger;
 export function create<T extends LogLevels>(options: LogOptions<T>, levels: T): Logger<T>;
 /**
  * 建立新 logger

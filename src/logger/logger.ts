@@ -1,11 +1,11 @@
 import winston from 'winston';
-import { LogLevels } from '../logLevels';
+import { LogLevels, DefaultLogLevels } from '../logLevels';
 import { RequiredLevels } from './options';
 import EventEmitter from 'events';
 
 type LeveledLogMethod = (message: string, others?: object) => void;
 
-export type Logger<Levels extends LogLevels> = DivideLogger<Levels> &
+export type Logger<Levels extends LogLevels = DefaultLogLevels> = DivideLogger<Levels> &
   {
     [P in keyof Levels]: LeveledLogMethod;
   };

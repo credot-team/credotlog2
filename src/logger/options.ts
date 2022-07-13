@@ -6,7 +6,7 @@ export type LogFormats = 'plainText' | 'json';
 
 export type RequiredLevels = keyof typeof syslog.levels;
 
-export type LogOptions<Levels extends LogLevels> = FixedLogOptions<Levels> &
+export type LogOptions<Levels extends LogLevels = DefaultLogLevels> = FixedLogOptions<Levels> &
   (Exclude<RequiredLevels, keyof Levels> extends never
     ? LevelMapping<Levels>
     : Required<LevelMapping<Levels>>);
