@@ -76,6 +76,18 @@ function recordStartTime(this: any) {
   (this as WithStartTimeRecorded)._startAt = process.hrtime();
 }
 
+function mergeDefaultOptions(
+  options: LogRequestOptions<any, any>,
+): Required<LogRequestOptions<any, any>> {
+  return {
+    logger: options.logger,
+    levelMap: options.levelMap ?? defaultLevelMap,
+    formatter: options.formatter ?? defaultFormatter,
+    logTraceInfo: options.logTraceInfo ?? false,
+    traceGetter: options.traceGetter ?? defaultTraceGetter,
+  };
+}
+
 /**
  * 建立 logger middleware
  * @param options
@@ -84,6 +96,8 @@ export function logging<T extends LogLevels>(
   options: LogRequestOptions<T, express.Response>,
 ): Handler<express.Request, express.Response> {
   const rSymbol = Symbol.for('credotlog');
+
+  const finalOptions = mergeDefaultOptions(options);
 
   return (req, res, next) => {
     // 防止重複註冊事件
@@ -95,22 +109,14 @@ export function logging<T extends LogLevels>(
       req[rSymbol] = true;
       onHeaders(res, recordStartTime);
     }
-    onFinished(res, log(options));
+    onFinished(res, log(finalOptions));
     next();
   };
 }
 
-function log(options: LogRequestOptions<any, any>) {
-  const opts: Required<LogRequestOptions<any, any>> = {
-    logger: options.logger,
-    levelMap: options.levelMap ?? defaultLevelMap,
-    formatter: options.formatter ?? defaultFormatter,
-    logTraceInfo: options.logTraceInfo ?? false,
-    traceGetter: options.traceGetter ?? defaultTraceGetter,
-  };
-
+function log(options: Required<LogRequestOptions<any, any>>) {
   return (err: Error | null, res: ServerResponse & WithStartTimeRecorded) => {
-    logRequest(err, res, opts);
+    logRequest(err, res, options);
   };
 }
 
