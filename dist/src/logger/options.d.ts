@@ -1,8 +1,8 @@
 import { DefaultLogLevels, LogLevels, syslog } from '../logLevels';
-declare type StringKeys<T> = Extract<keyof T, string>;
-export declare type LogFormats = 'plainText' | 'json';
-export declare type RequiredLevels = keyof typeof syslog.levels;
-export declare type LogOptions<Levels extends LogLevels = DefaultLogLevels> = FixedLogOptions<Levels> & (Exclude<RequiredLevels, keyof Levels> extends never ? LevelMapping<Levels> : Required<LevelMapping<Levels>>);
+type StringKeys<T> = Extract<keyof T, string>;
+export type LogFormats = 'plainText' | 'json';
+export type RequiredLevels = keyof typeof syslog.levels;
+export type LogOptions<Levels extends LogLevels = DefaultLogLevels> = FixedLogOptions<Levels> & (Exclude<RequiredLevels, keyof Levels> extends never ? LevelMapping<Levels> : Required<LevelMapping<Levels>>);
 export declare const DefaultLevelMapping: {
     [p in RequiredLevels]: StringKeys<DefaultLogLevels>;
 };
@@ -89,7 +89,7 @@ interface graylogOptions<Levels> {
      */
     level: StringKeys<Levels>;
 }
-declare type LevelMapping<Levels> = {
+type LevelMapping<Levels> = {
     /**
      * 指定 level 對應表。
      *

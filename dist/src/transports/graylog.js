@@ -20,6 +20,10 @@ const safe_stable_stringify_1 = __importDefault(require("safe-stable-stringify")
 const logLevels_1 = require("../logLevels");
 const url_1 = require("url");
 const axios_1 = __importDefault(require("axios"));
+/* TODO: try to migrate to got since it's a http request package which targets nodejs
+  migrate guide: https://github.com/sindresorhus/got/blob/main/documentation/migration-guides/axios.md
+ */
+const axiosInstance = axios_1.default.create();
 class GraylogTransport extends winston_transport_1.default {
     constructor(opts) {
         var _a;
@@ -54,7 +58,7 @@ class GraylogTransport extends winston_transport_1.default {
         const firstLine = eol >= 0 ? message.slice(0, eol) : message;
         const shortMessage = firstLine.length > 100 ? firstLine.slice(0, 100) : firstLine;
         const payload = Object.assign({ version: GraylogTransport.VERSION, timestamp: Math.trunc(Date.now() * 1e-3), level: this.levelNumberMapping[level], host: this.hostname, short_message: shortMessage, full_message: message }, additionFields);
-        axios_1.default
+        axiosInstance
             .post(this.gelfUrl, payload, { timeout: 1000 })
             .then((result) => {
             if (result.status !== 202)

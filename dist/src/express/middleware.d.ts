@@ -3,25 +3,29 @@ import { IncomingMessage, ServerResponse } from 'http';
 import express from 'express';
 import { Logger } from '../logger';
 import { LogLevels } from '../logLevels';
-declare type RequestLogLevels = 'info' | 'notice' | 'warn' | 'err';
-declare type LevelMap<Levels> = {
+type RequestLogLevels = 'info' | 'notice' | 'warn' | 'err';
+type LevelMap<Levels> = {
     [p in RequestLogLevels]: keyof Levels;
 };
-declare type Formatter<Response extends ServerResponse> = (info: MessageInfo, args: {
+type TraceGetter = (req: express.Request, res: express.Response) => string;
+type Formatter<Response extends ServerResponse> = (info: MessageInfo, args: {
     res: Response;
     statusCode: number | undefined;
     jsonBody?: any;
 }) => MessageInfo;
-declare type Handler<Request extends IncomingMessage, Response extends ServerResponse> = (req: Request, res: Response, callback: (err?: Error) => void) => void;
+type Handler<Request extends IncomingMessage, Response extends ServerResponse> = (req: Request, res: Response, callback: (err?: Error) => void) => void;
 interface MessageInfo {
     level: RequestLogLevels;
     message: string;
+    traceInfo?: string;
     others?: any;
 }
 interface LogRequestOptions<Levels extends LogLevels, Response extends ServerResponse> {
     logger: Logger<Levels>;
     levelMap?: LevelMap<Levels>;
     formatter?: Formatter<Response>;
+    logTraceInfo?: boolean;
+    traceGetter?: TraceGetter;
 }
 /**
  * 建立 logger middleware

@@ -23,4 +23,4 @@ var format;
         console.log('[winston] format debugger: ', info);
         return info;
     });
-})(format = exports.format || (exports.format = {}));
+})(format || (exports.format = format = {}));

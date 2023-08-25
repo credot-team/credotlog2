@@ -3,8 +3,8 @@ import winston from 'winston';
 import { LogLevels, DefaultLogLevels } from '../logLevels';
 import { RequiredLevels } from './options';
 import EventEmitter from 'events';
-declare type LeveledLogMethod = (message: string, others?: object) => void;
-export declare type Logger<Levels extends LogLevels = DefaultLogLevels> = DivideLogger<Levels> & {
+type LeveledLogMethod = (message: string, others?: object) => void;
+export type Logger<Levels extends LogLevels = DefaultLogLevels> = DivideLogger<Levels> & {
     [P in keyof Levels]: LeveledLogMethod;
 };
 export declare class DivideLogger<Levels extends LogLevels> {

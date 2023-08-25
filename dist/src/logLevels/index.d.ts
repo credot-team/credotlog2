@@ -1,11 +1,11 @@
-export declare type LogLevels = {
+export type LogLevels = {
     [key: string]: number;
 };
-export declare type LevelDefinition<T> = {
+export type LevelDefinition<T> = {
     levels: T;
     colors: any;
 };
-export declare type DefaultLogLevels = typeof Default.levels;
+export type DefaultLogLevels = typeof Default.levels;
 export declare const Default: LevelDefinition<{
     emerg: number;
     alert: number;

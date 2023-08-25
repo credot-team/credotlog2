@@ -13,6 +13,8 @@ type LevelMap<Levels> = {
   [p in RequestLogLevels]: keyof Levels;
 };
 
+type TraceGetter = (req: express.Request, res: express.Response) => string;
+
 type Formatter<Response extends ServerResponse> = (
   info: MessageInfo,
   args: {
@@ -35,6 +37,7 @@ type WithStartTimeRecorded = {
 interface MessageInfo {
   level: RequestLogLevels;
   message: string;
+  traceInfo?: string;
   others?: any;
 }
 
@@ -42,6 +45,8 @@ interface LogRequestOptions<Levels extends LogLevels, Response extends ServerRes
   logger: Logger<Levels>;
   levelMap?: LevelMap<Levels>;
   formatter?: Formatter<Response>;
+  logTraceInfo?: boolean;
+  traceGetter?: TraceGetter;
 }
 
 //============================================================
@@ -100,6 +105,8 @@ function log(options: LogRequestOptions<any, any>) {
     logger: options.logger,
     levelMap: options.levelMap ?? defaultLevelMap,
     formatter: options.formatter ?? defaultFormatter,
+    logTraceInfo: options.logTraceInfo ?? false,
+    traceGetter: options.traceGetter ?? defaultTraceGetter,
   };
 
   return (err: Error | null, res: ServerResponse & WithStartTimeRecorded) => {
@@ -128,6 +135,7 @@ function logRequest(
   const contentLength = res.getHeader('content-length') || UNDEFINED_CHAR;
   // get request url path
   const path = parseurl.original(req)?.path ?? UNDEFINED_CHAR;
+
   // generate message string
   const message = `HTTP ${req.method} ${path} ${status} ${costTime} ${contentLength}`;
 
@@ -145,6 +153,9 @@ function logRequest(
 
   let info: MessageInfo = { level: level, message: message };
   try {
+    if (opts.logTraceInfo && opts.traceGetter) {
+      info.traceInfo = opts.traceGetter(req as express.Request, res as express.Response);
+    }
     if (opts.formatter) {
       info = opts.formatter(info, { res, statusCode: status, jsonBody: jsonBody });
     }
@@ -160,10 +171,24 @@ function logRequest(
  * @param args
  */
 const defaultFormatter: Formatter<express.Response> = (info, args) => {
-  if (!(args.statusCode === 200 && args.jsonBody)) return info;
+  if (info.traceInfo) {
+    info.message = `${info.traceInfo} ${info.message}`;
+  }
+
+  if (!(args.statusCode === 200 && args.jsonBody)) {
+    return info;
+  }
 
   const { errorCode, errorMessage } = args.jsonBody;
   info.message = `${info.message} ${jsonStringify({ errorCode, errorMessage })}`;
   if (errorCode > 0) info.level = 'notice';
   return info;
+};
+
+/**
+ * 預設 TraceGetter
+ * 固定回傳 Request.ip
+ */
+const defaultTraceGetter: TraceGetter = (req, res) => {
+  return req.ip;
 };

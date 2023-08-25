@@ -16,7 +16,19 @@ const logger = credotlog.create({
 
 const app = express();
 
-app.use(credotlog.express.logging({ logger: logger }));
+app.use(
+  credotlog.express.logging({
+    logger: logger,
+    logTraceInfo: true,
+    traceGetter: (req, res) => {
+      return `client-ip: '${req.ip}'`;
+    },
+    formatter: (info, args) => {
+      info.traceInfo && (info.others = { trace: info.traceInfo });
+      return info;
+    }
+  }),
+);
 
 app.all('/test', (req, res) => {
   res.json({ errorCode: 0, errorMessage: 'success' });

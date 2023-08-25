@@ -52,11 +52,13 @@ function logging(options) {
 }
 exports.logging = logging;
 function log(options) {
-    var _a, _b;
+    var _a, _b, _c, _d;
     const opts = {
         logger: options.logger,
         levelMap: (_a = options.levelMap) !== null && _a !== void 0 ? _a : defaultLevelMap,
         formatter: (_b = options.formatter) !== null && _b !== void 0 ? _b : defaultFormatter,
+        logTraceInfo: (_c = options.logTraceInfo) !== null && _c !== void 0 ? _c : false,
+        traceGetter: (_d = options.traceGetter) !== null && _d !== void 0 ? _d : defaultTraceGetter,
     };
     return (err, res) => {
         logRequest(err, res, opts);
@@ -88,6 +90,9 @@ function logRequest(err, res, opts) {
     const jsonBody = res[JSON_DATA_SYMBOL];
     let info = { level: level, message: message };
     try {
+        if (opts.logTraceInfo && opts.traceGetter) {
+            info.traceInfo = opts.traceGetter(req, res);
+        }
         if (opts.formatter) {
             info = opts.formatter(info, { res, statusCode: status, jsonBody: jsonBody });
         }
@@ -103,11 +108,22 @@ function logRequest(err, res, opts) {
  * @param args
  */
 const defaultFormatter = (info, args) => {
-    if (!(args.statusCode === 200 && args.jsonBody))
+    if (info.traceInfo) {
+        info.message = `${info.traceInfo} ${info.message}`;
+    }
+    if (!(args.statusCode === 200 && args.jsonBody)) {
         return info;
+    }
     const { errorCode, errorMessage } = args.jsonBody;
     info.message = `${info.message} ${(0, safe_stable_stringify_1.default)({ errorCode, errorMessage })}`;
     if (errorCode > 0)
         info.level = 'notice';
     return info;
+};
+/**
+ * 預設 TraceGetter
+ * 固定回傳 Request.ip
+ */
+const defaultTraceGetter = (req, res) => {
+    return req.ip;
 };
