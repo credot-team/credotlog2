@@ -30,12 +30,23 @@ function recordJsonOutput(res) {
 function recordStartTime() {
     this._startAt = process.hrtime();
 }
+function mergeDefaultOptions(options) {
+    var _a, _b, _c, _d;
+    return {
+        logger: options.logger,
+        levelMap: (_a = options.levelMap) !== null && _a !== void 0 ? _a : defaultLevelMap,
+        formatter: (_b = options.formatter) !== null && _b !== void 0 ? _b : defaultFormatter,
+        logTraceInfo: (_c = options.logTraceInfo) !== null && _c !== void 0 ? _c : false,
+        traceGetter: (_d = options.traceGetter) !== null && _d !== void 0 ? _d : defaultTraceGetter,
+    };
+}
 /**
  * 建立 logger middleware
  * @param options
  */
 function logging(options) {
     const rSymbol = Symbol.for('credotlog');
+    const finalOptions = mergeDefaultOptions(options);
     return (req, res, next) => {
         // 防止重複註冊事件
         // @ts-ignore
@@ -46,22 +57,14 @@ function logging(options) {
             req[rSymbol] = true;
             (0, on_headers_1.default)(res, recordStartTime);
         }
-        (0, on_finished_1.default)(res, log(options));
+        (0, on_finished_1.default)(res, log(finalOptions));
         next();
     };
 }
 exports.logging = logging;
 function log(options) {
-    var _a, _b, _c, _d;
-    const opts = {
-        logger: options.logger,
-        levelMap: (_a = options.levelMap) !== null && _a !== void 0 ? _a : defaultLevelMap,
-        formatter: (_b = options.formatter) !== null && _b !== void 0 ? _b : defaultFormatter,
-        logTraceInfo: (_c = options.logTraceInfo) !== null && _c !== void 0 ? _c : false,
-        traceGetter: (_d = options.traceGetter) !== null && _d !== void 0 ? _d : defaultTraceGetter,
-    };
     return (err, res) => {
-        logRequest(err, res, opts);
+        logRequest(err, res, options);
     };
 }
 function logRequest(err, res, opts) {
