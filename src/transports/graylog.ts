@@ -4,6 +4,12 @@ import { LogLevels, syslog } from '../logLevels';
 import { URL } from 'url';
 import axios from 'axios';
 
+/* TODO: try to migrate to got since it's a http request package which targets nodejs
+  migrate guide: https://github.com/sindresorhus/got/blob/main/documentation/migration-guides/axios.md
+ */
+
+const axiosInstance = axios.create();
+
 interface GraylogTransportOptions extends Transport.TransportStreamOptions {
   graylog: {
     server: {
@@ -74,7 +80,7 @@ export class GraylogTransport extends Transport {
       ...additionFields,
     };
 
-    axios
+    axiosInstance
       .post(this.gelfUrl, payload, { timeout: 1000 })
       .then((result) => {
         if (result.status !== 202) throw new Error(`response status: ${result.status};`);
